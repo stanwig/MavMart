@@ -11,10 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mavmart.ui.theme.MavMartTheme
-import androidx.compose.foundation.layout.*        // Box, Column, Row, padding, Spacer, etc.
-import androidx.compose.material3.*               // Button, Text, Surface, MaterialTheme, etc.
+import androidx.compose.foundation.layout.*        
+import androidx.compose.material3.*               
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment              // Alignment.Center, Alignment.BottomCenter
+import androidx.compose.ui.Alignment              
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
@@ -75,7 +75,6 @@ class MainActivity : ComponentActivity() {
                                 onBack = { nav.popBackStack() },
                                 onSubmit = { role, first, last, email, password ->
                                     // TODO: send to server / save locally
-                                    // e.g., Log.d("REGISTER", "$role $first $last $email $password")
                                     nav.popBackStack() // return to login
                                 }
                             )
