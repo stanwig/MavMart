@@ -3,32 +3,39 @@ package com.example.mavmart
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mavmart.ui.theme.MavMartTheme
-import androidx.compose.foundation.layout.*        
-import androidx.compose.material3.*               
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment              
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.text.font.FontWeight
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MavMartTheme {
-                Surface(Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-                    contentColor = MaterialTheme.colorScheme.onBackground) {
+                // Unified palette consistent with AuthLoginScreen
+                val brandPrimary = Color(0xFF0A2647)    // deep navy blue
+                val backgroundColor = Color(0xFFF8F9FA) // very light gray background
 
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = backgroundColor,
+                    contentColor = brandPrimary
+                ) {
                     val nav = rememberNavController()
 
                     NavHost(navController = nav, startDestination = "login") {
@@ -36,7 +43,7 @@ class MainActivity : ComponentActivity() {
                             LoginScreen(
                                 onBuyer = { nav.navigate("login/buyer") },
                                 onSeller = { nav.navigate("login/seller") },
-                                onAdmin  = { nav.navigate("login/admin") },
+                                onAdmin = { nav.navigate("login/admin") },
                                 onRegister = { nav.navigate("register") }
                             )
                         }
@@ -44,39 +51,27 @@ class MainActivity : ComponentActivity() {
                             AuthLoginScreen(
                                 role = Role.Buyer,
                                 onBack = { nav.popBackStack() },
-                                onSubmit = { email, password ->
-                                    // TODO: auth Buyer here
-                                    nav.popBackStack() // return to login
-                                }
+                                onSubmit = { _, _ -> nav.popBackStack() }
                             )
                         }
                         composable("login/seller") {
                             AuthLoginScreen(
                                 role = Role.Seller,
                                 onBack = { nav.popBackStack() },
-                                onSubmit = { email, password ->
-                                    // TODO: auth Seller here
-                                    nav.popBackStack() // return to login
-                                }
+                                onSubmit = { _, _ -> nav.popBackStack() }
                             )
                         }
                         composable("login/admin") {
                             AuthLoginScreen(
                                 role = Role.Admin,
                                 onBack = { nav.popBackStack() },
-                                onSubmit = { email, password ->
-                                    // TODO: auth Admin here
-                                    nav.popBackStack() // return to login
-                                }
+                                onSubmit = { _, _ -> nav.popBackStack() }
                             )
                         }
                         composable("register") {
                             RegisterScreen(
                                 onBack = { nav.popBackStack() },
-                                onSubmit = { role, first, last, email, password ->
-                                    // TODO: send to server / save locally
-                                    nav.popBackStack() // return to login
-                                }
+                                onSubmit = { _, _, _, _, _ -> nav.popBackStack() }
                             )
                         }
                     }
@@ -94,58 +89,172 @@ fun LoginScreen(
     onRegister: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // Color palette aligned with AuthLoginScreen and screenshot
+    val brandPrimary = Color(0xFF0A2647)    // deep navy blue
+    val brandSecondary = Color(0xFF144272)  // soft dark blue (used in other areas)
+    val brandAccent = Color(0xFFFFF3D9)     // pale cream accent
+    val brandOrange = Color(0xFFFF8C00)     // vivid orange to match screenshot
+    val backgroundColor = Color(0xFFF8F9FA) // light neutral background
+
     Surface(
-        modifier = modifier
-            .fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground
+        modifier = modifier.fillMaxSize(),
+        color = backgroundColor,
+        contentColor = brandPrimary
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp)
-        ) {
-            // Centered block
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Top banner with correct orange
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(170.dp),
+                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
+                color = brandOrange
             ) {
-                Text(
-                    "MavMart",
-                    fontSize = 42.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(Modifier.height(24.dp))
-
-                Button(
-                    onClick = onBuyer,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Login as Buyer") }
-
-                Spacer(Modifier.height(12.dp))
-
-                Button(
-                    onClick = onSeller,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Login as Seller") }
-
-                Spacer(Modifier.height(12.dp))
-
-                Button(
-                    onClick = onAdmin,
-                    modifier = Modifier.fillMaxWidth()
-                ) { Text("Login as Admin") }
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFFFF3D9)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "MM",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = brandPrimary
+                        )
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Column {
+                        Text(
+                            text = "MavMart",
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Choose how you want to sign in",
+                            color = Color.White.copy(alpha = 0.85f),
+                            fontSize = 14.sp
+                        )
+                    }
+                }
             }
 
-            // Bottom button
+            Spacer(Modifier.height(20.dp))
+
+            // Center card area for login role selection
+            ElevatedCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Welcome",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.15.sp
+                        ),
+                        color = brandPrimary
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Button(
+                        onClick = onBuyer,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = brandPrimary,
+                            contentColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
+                    ) {
+                        Text("Login as Buyer", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Button(
+                        onClick = onSeller,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = brandPrimary,
+                            contentColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
+                    ) {
+                        Text("Login as Seller", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Button(
+                        onClick = onAdmin,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = brandPrimary,
+                            contentColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
+                    ) {
+                        Text("Login as Admin", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = "Tip: Use your UTA email if you are a current student.",
+                        style = MaterialTheme.typography.bodySmall.copy(letterSpacing = 0.05.sp),
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            // Bottom register button now in correct orange tone
             Button(
                 onClick = onRegister,
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .padding(bottom = 24.dp)      // gap from the bottom
-                    .navigationBarsPadding()      // avoids gesture bar
-            ) { Text("Register") }
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 24.dp)
+                    .heightIn(min = 48.dp)
+                    .navigationBarsPadding(),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = brandOrange,
+                    contentColor = Color.White
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
+            ) {
+                Text("Register", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+            }
         }
     }
 }
@@ -155,3 +264,4 @@ fun LoginScreen(
 private fun LoginScreenPreview() {
     MavMartTheme { LoginScreen({}, {}, {}, {}) }
 }
+
