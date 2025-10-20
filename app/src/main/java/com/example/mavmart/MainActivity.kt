@@ -27,7 +27,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MavMartTheme {
-                // Unified palette consistent with AuthLoginScreen
                 val brandPrimary = Color(0xFF0A2647)    // deep navy blue
                 val backgroundColor = Color(0xFFF8F9FA) // very light gray background
 
@@ -41,37 +40,25 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = nav, startDestination = "login") {
                         composable("login") {
                             LoginScreen(
-                                onBuyer = { nav.navigate("login/buyer") },
-                                onSeller = { nav.navigate("login/seller") },
-                                onAdmin = { nav.navigate("login/admin") },
+                                onUser = { nav.navigate("login/auth") },
+                                onAdmin = { nav.navigate("login/auth") },
                                 onRegister = { nav.navigate("register") }
                             )
                         }
-                        composable("login/buyer") {
+                        // Single auth screen handles role at button click (User/Admin)
+                        composable("login/auth") {
                             AuthLoginScreen(
-                                role = Role.Buyer,
                                 onBack = { nav.popBackStack() },
-                                onSubmit = { _, _ -> nav.popBackStack() }
-                            )
-                        }
-                        composable("login/seller") {
-                            AuthLoginScreen(
-                                role = Role.Seller,
-                                onBack = { nav.popBackStack() },
-                                onSubmit = { _, _ -> nav.popBackStack() }
-                            )
-                        }
-                        composable("login/admin") {
-                            AuthLoginScreen(
-                                role = Role.Admin,
-                                onBack = { nav.popBackStack() },
-                                onSubmit = { _, _ -> nav.popBackStack() }
+                                onSubmit = { role, email, password ->
+                                    // TODO: route based on role (Role.User / Role.Admin)
+                                    nav.popBackStack()
+                                }
                             )
                         }
                         composable("register") {
                             RegisterScreen(
                                 onBack = { nav.popBackStack() },
-                                onSubmit = { _, _, _, _, _ -> nav.popBackStack() }
+                                onSubmit = { _, _, _, _, _ -> nav.popBackStack() } // Register creates a User inside RegisterScreen
                             )
                         }
                     }
@@ -83,17 +70,15 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LoginScreen(
-    onBuyer: () -> Unit,
-    onSeller: () -> Unit,
+    onUser: () -> Unit,
     onAdmin: () -> Unit,
     onRegister: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Color palette aligned with AuthLoginScreen and screenshot
     val brandPrimary = Color(0xFF0A2647)    // deep navy blue
-    val brandSecondary = Color(0xFF144272)  // soft dark blue (used in other areas)
+    val brandSecondary = Color(0xFF144272)  // soft dark blue
     val brandAccent = Color(0xFFFFF3D9)     // pale cream accent
-    val brandOrange = Color(0xFFFF8C00)     // vivid orange to match screenshot
+    val brandOrange = Color(0xFFFF8C00)     // vivid orange
     val backgroundColor = Color(0xFFF8F9FA) // light neutral background
 
     Surface(
@@ -102,7 +87,7 @@ fun LoginScreen(
         contentColor = brandPrimary
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Top banner with correct orange
+            // Top banner
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,7 +105,7 @@ fun LoginScreen(
                         modifier = Modifier
                             .size(52.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFFFF3D9)),
+                            .background(brandAccent),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
@@ -149,7 +134,7 @@ fun LoginScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // Center card area for login role selection
+            // Center card area for login role selection (User/Admin only)
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -176,7 +161,7 @@ fun LoginScreen(
                     Spacer(Modifier.height(12.dp))
 
                     Button(
-                        onClick = onBuyer,
+                        onClick = onUser,
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 48.dp),
@@ -187,24 +172,7 @@ fun LoginScreen(
                         ),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
                     ) {
-                        Text("Login as Buyer", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                    Spacer(Modifier.height(12.dp))
-
-                    Button(
-                        onClick = onSeller,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 48.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = brandPrimary,
-                            contentColor = Color.White
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
-                    ) {
-                        Text("Login as Seller", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                        Text("Login as User", fontSize = 16.sp, fontWeight = FontWeight.Medium)
                     }
 
                     Spacer(Modifier.height(12.dp))
@@ -237,7 +205,7 @@ fun LoginScreen(
 
             Spacer(Modifier.weight(1f))
 
-            // Bottom register button now in correct orange tone
+            // Bottom register button
             Button(
                 onClick = onRegister,
                 modifier = Modifier
@@ -262,6 +230,5 @@ fun LoginScreen(
 @Preview(showBackground = true)
 @Composable
 private fun LoginScreenPreview() {
-    MavMartTheme { LoginScreen({}, {}, {}, {}) }
+    MavMartTheme { LoginScreen({}, {}, {}) }
 }
-
