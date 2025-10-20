@@ -180,6 +180,7 @@ fun AuthLoginScreen(
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         modifier = Modifier.fillMaxWidth(),
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = brandPrimary,
@@ -193,6 +194,7 @@ fun AuthLoginScreen(
                         onValueChange = { password = it },
                         label = { Text("Password") },
                         singleLine = true,
+                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
                         visualTransformation = if (showPass) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         trailingIcon = {
