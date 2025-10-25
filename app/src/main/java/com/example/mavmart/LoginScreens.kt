@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -22,125 +23,37 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+/* ------------ Landing screen ------------ */
+
 @Composable
-fun AuthLoginScreen(
-    onBack: () -> Unit,
-    onSubmit: (role: Role, email: String, password: String) -> Unit, // role provided here
+fun LoginScreen(
+    onUser: () -> Unit,
+    onAdmin: () -> Unit,
+    onRegister: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var showPass by remember { mutableStateOf(false) }
+    val brandPrimary = Color(0xFF0A2647)
+    val brandAccent  = Color(0xFFFFF3D9)
+    val brandOrange  = Color(0xFFFF8C00)
+    val background   = Color(0xFFF8F9FA)
 
-    val brandPrimary = Color(0xFF0A2647)    // deep navy
-    val brandOrange = Color(0xFFFF8C00)     // vibrant orange
-    val backgroundColor = Color(0xFFF8F9FA) // very light gray
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Login",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = brandPrimary,
-                        fontWeight = FontWeight.Medium
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = brandPrimary
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
-            )
-        },
-        bottomBar = {
-            Surface(tonalElevation = 1.dp, shadowElevation = 2.dp, color = Color.Transparent) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .imePadding()
-                        .padding(16.dp)
-                ) {
-                    Button(
-                        onClick = { onSubmit(Role.User, email, password) },
-                        enabled = email.isNotBlank() && password.isNotBlank(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 48.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = brandPrimary,
-                            contentColor = Color.White
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
-                    ) {
-                        Text("Login as User", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                    Spacer(Modifier.height(12.dp))
-
-                    Button(
-                        onClick = { onSubmit(Role.Admin, email, password) },
-                        enabled = email.isNotBlank() && password.isNotBlank(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 48.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = brandOrange,
-                            contentColor = Color.White
-                        ),
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
-                    ) {
-                        Text("Login as Admin", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                    }
-                }
-            }
-        }
-    ) { inner ->
-        Column(
-            modifier = Modifier
-                .padding(inner)
-                .fillMaxSize()
-                .background(backgroundColor)
-        ) {
-            // Banner
+    Surface(modifier = modifier.fillMaxSize(), color = background, contentColor = brandPrimary) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(170.dp),
+                modifier = Modifier.fillMaxWidth().height(170.dp),
                 shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
-                color = brandPrimary
+                color = brandOrange
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(CircleShape)
-                            .background(brandOrange),
+                        modifier = Modifier.size(52.dp).clip(CircleShape).background(brandAccent),
                         contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "MM",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = brandPrimary
-                        )
-                    }
+                    ) { Text("MM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = brandPrimary) }
                     Spacer(Modifier.width(14.dp))
                     Column {
                         Text("MavMart", fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
@@ -151,31 +64,169 @@ fun AuthLoginScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            // Card with inputs
             ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = CardDefaults.elevatedCardColors(containerColor = Color.White)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        onClick = onUser,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = brandPrimary, contentColor = Color.White)
+                    ) { Text("Login as User", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Button(
+                        onClick = onAdmin,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = brandPrimary, contentColor = Color.White)
+                    ) { Text("Login as Admin", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
+                }
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            Button(
+                onClick = onRegister,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 24.dp).heightIn(min = 48.dp),
+                shape = RoundedCornerShape(14.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = brandOrange, contentColor = Color.White)
+            ) { Text("Register", fontSize = 16.sp, fontWeight = FontWeight.SemiBold) }
+        }
+    }
+}
+
+// Keep last email typed so we can fetch the user object on success
+private var RoleLoginForm_lastEmail: String? = null
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RoleLoginForm(
+    title: String,
+    onBack: () -> Unit,
+    validateEmail: ((String) -> String?)? = null,
+    authenticate: (email: String, password: String) -> Boolean,
+    onSuccess: () -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var showPass by remember { mutableStateOf(false) }
+
+    val brandPrimary = Color(0xFF0A2647)
+    val brandOrange  = Color(0xFFFF8C00)
+    val background   = Color(0xFFF8F9FA)
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis, color = brandPrimary, fontWeight = FontWeight.Medium)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = brandPrimary)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        bottomBar = {
+            Surface(tonalElevation = 1.dp, shadowElevation = 2.dp, color = Color.Transparent) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().navigationBarsPadding().imePadding().padding(16.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            val msg = validateEmail?.invoke(email)
+                            if (msg != null) {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = msg,
+                                        actionLabel = "Dismiss",
+                                        withDismissAction = true,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            } else {
+                                val ok = authenticate(email.trim().lowercase(), password)
+                                if (ok) {
+                                    onSuccess()
+                                } else {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(
+                                            message = "Invalid email or password.",
+                                            actionLabel = "Dismiss",
+                                            withDismissAction = true,
+                                            duration = SnackbarDuration.Short
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        enabled = email.isNotBlank() && password.isNotBlank(),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = brandPrimary, contentColor = Color.White),
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 3.dp)
+                    ) { Text("Login", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
+                }
+            }
+        }
+    ) { inner ->
+        Column(
+            modifier = Modifier.padding(inner).fillMaxSize().background(background)
+        ) {
+            // Banner
+            Surface(
+                modifier = Modifier.fillMaxWidth().height(170.dp),
+                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
+                color = brandPrimary
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier.size(52.dp).clip(CircleShape).background(brandOrange),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("MM", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = brandPrimary)
+                    }
+                    Spacer(Modifier.width(14.dp))
+                    Column { Text("MavMart", fontSize = 26.sp, fontWeight = FontWeight.SemiBold, color = Color.White) }
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
                 shape = RoundedCornerShape(14.dp),
                 colors = CardDefaults.elevatedCardColors(containerColor = Color.White),
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
                         text = "Welcome back",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            letterSpacing = 0.15.sp
-                        ),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.15.sp),
                         color = brandPrimary
                     )
 
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = { email = it
+                            RoleLoginForm_lastEmail = it.trim().lowercase() },
                         label = { Text("Email") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -214,12 +265,6 @@ fun AuthLoginScreen(
                             unfocusedBorderColor = Color.LightGray
                         )
                     )
-
-                    Text(
-                        text = "Use your UTA email if you are a current student.",
-                        style = MaterialTheme.typography.bodySmall.copy(letterSpacing = 0.05.sp),
-                        color = Color.Gray
-                    )
                 }
             }
 
@@ -227,3 +272,47 @@ fun AuthLoginScreen(
         }
     }
 }
+
+@Composable
+fun UserLoginScreen(
+    onBack: () -> Unit,
+    onSuccess: (Long) -> Unit   // include userId
+) {
+    val context = LocalContext.current
+    val db = remember { AppDatabase.get(context) }
+
+    RoleLoginForm(
+        title = "User Login",
+        onBack = onBack,
+        validateEmail = null, // no special rule
+        authenticate = { email, password ->
+            db.validateLogin(email, password, expectedRole = Role.User) != null
+        },
+        onSuccess = {
+            // Look up the user we just validated to get its id
+            val u = db.findUserByEmail(RoleLoginForm_lastEmail.orEmpty()) // see helper below
+            if (u != null) onSuccess(u.id) else onSuccess(0L)
+        }
+    )
+}
+
+@Composable
+fun AdminLoginScreen(
+    onBack: () -> Unit,
+    onSuccess: () -> Unit
+) {
+    RoleLoginForm(
+        title = "Admin Login",
+        onBack = onBack,
+        // show an error if not @mavmart.com
+        validateEmail = { raw ->
+            val e = raw.trim().lowercase()
+            if (e.endsWith("@mavmart.com")) null
+            else "Admin email should end with @mavmart.com"
+        },
+        // accept any password for admins
+        authenticate = { _, _ -> true },
+        onSuccess = onSuccess
+    )
+}
+
