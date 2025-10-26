@@ -413,7 +413,7 @@ fun RegisterScreen(
                     .padding(16.dp)
                     .navigationBarsPadding(),
                 shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF8C00), contentColor = Color.White)
+                colors = ButtonDefaults.buttonColors(containerColor = brandPrimary, contentColor = Color.White)
             ) { Text("Create Account") }
         }
     ) { inner ->

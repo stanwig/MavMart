@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        // Admin login -> admin dashboard (optional route)
+                        // Admin login -> admin dashboard
                         composable("login/admin") {
                             AdminLoginScreen(
                                 onBack = { nav.popBackStack() },
