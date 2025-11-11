@@ -252,7 +252,6 @@ class AppDatabase private constructor(ctx: Context) :
         }
         return out
     }
-// NEW
     fun getAllListingsVisible(): List<Listing> {
         val sql = """
         SELECT l.${Db.Listings.COL_ID},

@@ -207,6 +207,7 @@ private fun UserDetailDialog(
         title = { Text("User Details") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("User ID: ${user.id}")
                 Text("Name: ${user.first} ${user.last}")
                 Text("Email: ${user.email}")
                 Text("Role: ${user.role}")

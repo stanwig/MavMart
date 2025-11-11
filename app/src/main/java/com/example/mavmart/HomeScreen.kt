@@ -16,6 +16,7 @@ import androidx.compose.material.icons.automirrored.outlined.ViewList
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -224,17 +225,15 @@ fun HomeScreen(
                         )
                     )
                 }
-
-                if (tab == HomeTab.Listings || tab == HomeTab.MyListings) {
-                    FloatingActionButton(
-                        onClick = { showCreate = true },
-                        modifier = Modifier.align(Alignment.TopCenter),
-                        containerColor = cs.primary,
-                        contentColor = cs.onPrimary
-                    ) {
-                        Icon(Icons.Outlined.Add, contentDescription = "Create Listing")
-                    }
+                FloatingActionButton(
+                    onClick = { showCreate = true },
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    containerColor = cs.primary,
+                    contentColor = cs.onPrimary
+                ) {
+                    Icon(Icons.Outlined.Add, contentDescription = "Create Listing")
                 }
+
             }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -690,11 +689,19 @@ private fun ListingsFeed(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Text(item.title, style = MaterialTheme.typography.titleMedium, color = cs.primary)
+                        Text(
+                            item.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = cs.primary
+                        )
 
                         item.description?.takeIf { it.isNotBlank() }?.let {
                             Spacer(Modifier.height(6.dp))
-                            Text(it, style = MaterialTheme.typography.bodyMedium, color = cs.onSurface)
+                            Text(
+                                it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = cs.onSurface
+                            )
                         }
 
                         Spacer(Modifier.height(12.dp))
@@ -1166,6 +1173,16 @@ private fun EditListingDialog(
     var condition by remember { mutableStateOf(listing.condition) }
     var price by remember { mutableStateOf((listing.priceCents / 100.0).toString()) }
 
+    var photos by remember { mutableStateOf(listing.photos.toMutableList()) }
+
+    // Add photos picker
+    val addPhotos = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetMultipleContents()
+    ) { uris ->
+        val newUris = uris.map { it.toString() }.filter { it.isNotBlank() }
+        if (newUris.isNotEmpty()) photos = (photos + newUris).toMutableList()
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Edit listing", color = cs.primary) },
@@ -1182,6 +1199,7 @@ private fun EditListingDialog(
                         unfocusedBorderColor = Color.LightGray
                     )
                 )
+
                 OutlinedTextField(
                     value = description, onValueChange = { description = it },
                     label = { Text("Description (optional)") },
@@ -1210,6 +1228,54 @@ private fun EditListingDialog(
                         unfocusedBorderColor = Color.LightGray
                     )
                 )
+
+                // Photos section
+                Text("Photos", color = cs.primary, style = MaterialTheme.typography.titleSmall)
+
+                if (photos.isNotEmpty()) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(photos, key = { it }) { uri ->
+                            Box(
+                                modifier = Modifier
+                                    .size(90.dp)
+                                    .clip(MaterialTheme.shapes.medium)
+                            ) {
+                                AsyncImage(
+                                    model = uri,
+                                    contentDescription = null,
+                                    modifier = Modifier.matchParentSize()
+                                )
+                                // Tiny "x" chip in the corner
+                                Surface(
+                                    color = cs.surface.copy(alpha = 0.92f),
+                                    shape = MaterialTheme.shapes.small,
+                                    shadowElevation = 2.dp,
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(2.dp)
+                                ) {
+                                    IconButton(
+                                        onClick = { photos = photos.filter { it != uri }.toMutableList() },
+                                        modifier = Modifier.size(22.dp),
+                                        content = {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Remove",
+                                                tint = cs.onSurface
+                                            )
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                OutlinedButton(
+                    onClick = { addPhotos.launch("image/*") },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
+                ) { Text("Add photos") }
             }
         },
         confirmButton = {
@@ -1222,7 +1288,8 @@ private fun EditListingDialog(
                             description = description.ifBlank { null },
                             category = category,
                             condition = condition,
-                            priceCents = cents
+                            priceCents = cents,
+                            photos = photos.toList() // <-- write back updated list
                         )
                     )
                 },
