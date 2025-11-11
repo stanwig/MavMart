@@ -83,7 +83,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onOpenListing = { listingId -> nav.navigate("listing/$userId/$listingId") },
                                 isDark = isDark,
-                                onToggleTheme = { isDark = !isDark }
+                                onToggleTheme = { isDark = !isDark },
+                                onCheckout = { nav.navigate("checkout/$userId") }
                             )
                         }
 
@@ -98,9 +99,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
 
-                        composable(
-                            route = "listing/{userId}/{listingId}",
-                            arguments = listOf(
+                        composable(route = "listing/{userId}/{listingId}", arguments = listOf(
                                 navArgument("userId") { type = NavType.LongType },
                                 navArgument("listingId") { type = NavType.LongType }
                             )
@@ -111,6 +110,43 @@ class MainActivity : ComponentActivity() {
                                 currentUserId = userId,
                                 listingId = listingId,
                                 onBack = { nav.popBackStack() }
+                            )
+                        }
+
+                        composable(
+                            route = "checkout/{userId}",
+                            arguments = listOf(navArgument("userId") { type = NavType.LongType })
+                        ) { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
+                            CheckoutScreen(
+                                currentUserId = userId,
+                                onBack = { nav.popBackStack() },
+                                onOrderPlaced = { orderId ->
+                                    // After success, go to order confirmation
+                                    nav.navigate("orderConfirmation/$userId/$orderId") {
+                                        launchSingleTop = true
+                                    }
+                                }
+                            )
+                        }
+                        composable(
+                            route = "orderConfirmation/{userId}/{orderId}",
+                            arguments = listOf(
+                                navArgument("userId") { type = NavType.LongType },
+                                navArgument("orderId") { type = NavType.LongType }
+                            )
+                        ) { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
+                            val orderId = backStackEntry.arguments?.getLong("orderId") ?: 0L
+                            OrderConfirmationScreen(
+                                userId = userId,
+                                orderId = orderId,
+                                onContinue = {
+                                    nav.navigate("home/$userId") {
+                                        popUpTo("home/$userId") { inclusive = true }
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
                         }
                     }

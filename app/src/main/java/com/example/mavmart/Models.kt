@@ -4,7 +4,7 @@ package com.example.mavmart
 
 enum class Role { User, Admin }
 
-/* ========= Listings enums (names must match DB values) ======== */
+/* ========= Listings enums ======== */
 
 enum class ListingCategory(val label: String) {
     GENERAL("General"),
@@ -47,5 +47,7 @@ data class Listing(
     val condition: ItemCondition,
     val photos: List<String>,
     val status: ListingStatus = ListingStatus.ACTIVE,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val place: String = "",
+    val contact: String = ""
 )

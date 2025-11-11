@@ -31,18 +31,19 @@ class AppDatabase private constructor(ctx: Context) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        // Your old policy: destructive for anything before 6
         if (oldVersion < 6) {
             db.execSQL("DROP TABLE IF EXISTS ${Db.Listings.TABLE}")
             db.execSQL("DROP TABLE IF EXISTS ${Db.Users.TABLE}")
             onCreate(db)
             return
         }
-        // v6 -> v7: add enabled column to users
         if (oldVersion < 7) {
             db.execSQL("ALTER TABLE ${Db.Users.TABLE} ADD COLUMN ${Db.Users.COL_ENABLED} INTEGER NOT NULL DEFAULT 1")
-            // ensure no nulls even if ALTER didn't apply default (some sqlite builds)
             db.execSQL("UPDATE ${Db.Users.TABLE} SET ${Db.Users.COL_ENABLED}=1 WHERE ${Db.Users.COL_ENABLED} IS NULL")
+        }
+        if (oldVersion < 8) {
+            db.execSQL("ALTER TABLE ${Db.Listings.TABLE} ADD COLUMN ${Db.Listings.COL_PLACE} TEXT NOT NULL DEFAULT ''")
+            db.execSQL("ALTER TABLE ${Db.Listings.TABLE} ADD COLUMN ${Db.Listings.COL_CONTACT} TEXT NOT NULL DEFAULT ''")
         }
     }
 
@@ -211,6 +212,8 @@ class AppDatabase private constructor(ctx: Context) :
             put(Db.Listings.COL_PHOTOS_JSON, photosToJson(listing.photos))
             put(Db.Listings.COL_STATUS, listing.status.name)
             put(Db.Listings.COL_CREATED_AT, listing.createdAt)
+            put(Db.Listings.COL_PLACE, listing.place)
+            put(Db.Listings.COL_CONTACT, listing.contact)
         }
         return writableDatabase.insert(Db.Listings.TABLE, null, cv)
     }
@@ -229,7 +232,9 @@ class AppDatabase private constructor(ctx: Context) :
                 Db.Listings.COL_CONDITION,
                 Db.Listings.COL_PHOTOS_JSON,
                 Db.Listings.COL_STATUS,
-                Db.Listings.COL_CREATED_AT
+                Db.Listings.COL_CREATED_AT,
+                Db.Listings.COL_PLACE,
+                Db.Listings.COL_CONTACT
             ),
             null, null, null, null,
             "${Db.Listings.COL_CREATED_AT} DESC"
@@ -246,7 +251,9 @@ class AppDatabase private constructor(ctx: Context) :
                     condition = ItemCondition.valueOf(it.getString(6)),
                     photos = jsonToPhotos(it.getString(7)),
                     status = ListingStatus.valueOf(it.getString(8)),
-                    createdAt = it.getLong(9)
+                    createdAt = it.getLong(9),
+                    place = it.getString(10),
+                    contact = it.getString(11)
                 )
             }
         }
@@ -263,7 +270,9 @@ class AppDatabase private constructor(ctx: Context) :
                l.${Db.Listings.COL_CONDITION},
                l.${Db.Listings.COL_PHOTOS_JSON},
                l.${Db.Listings.COL_STATUS},
-               l.${Db.Listings.COL_CREATED_AT}
+               l.${Db.Listings.COL_CREATED_AT},
+               l.${Db.Listings.COL_PLACE},
+               l.${Db.Listings.COL_CONTACT}
         FROM ${Db.Listings.TABLE} l
         JOIN ${Db.Users.TABLE} u
           ON u.${Db.Users.COL_ID} = l.${Db.Listings.COL_SELLER_ID}
@@ -285,7 +294,9 @@ class AppDatabase private constructor(ctx: Context) :
                     condition = ItemCondition.valueOf(it.getString(6)),
                     photos = jsonToPhotos(it.getString(7)),
                     status = ListingStatus.valueOf(it.getString(8)),
-                    createdAt = it.getLong(9)
+                    createdAt = it.getLong(9),
+                    place = it.getString(10),
+                    contact = it.getString(11)
                 )
             }
         }
@@ -306,7 +317,9 @@ class AppDatabase private constructor(ctx: Context) :
                 Db.Listings.COL_CONDITION,
                 Db.Listings.COL_PHOTOS_JSON,
                 Db.Listings.COL_STATUS,
-                Db.Listings.COL_CREATED_AT
+                Db.Listings.COL_CREATED_AT,
+                Db.Listings.COL_PLACE,
+                Db.Listings.COL_CONTACT
             ),
             "${Db.Listings.COL_SELLER_ID}=?",
             arrayOf(sellerId.toString()),
@@ -325,7 +338,9 @@ class AppDatabase private constructor(ctx: Context) :
                     condition = ItemCondition.valueOf(it.getString(6)),
                     photos = jsonToPhotos(it.getString(7)),
                     status = ListingStatus.valueOf(it.getString(8)),
-                    createdAt = it.getLong(9)
+                    createdAt = it.getLong(9),
+                    place = it.getString(10),
+                    contact = it.getString(11)
                 )
             }
         }
@@ -345,7 +360,9 @@ class AppDatabase private constructor(ctx: Context) :
                 Db.Listings.COL_CONDITION,
                 Db.Listings.COL_PHOTOS_JSON,
                 Db.Listings.COL_STATUS,
-                Db.Listings.COL_CREATED_AT
+                Db.Listings.COL_CREATED_AT,
+                Db.Listings.COL_PLACE,
+                Db.Listings.COL_CONTACT
             ),
             "${Db.Listings.COL_ID}=?",
             arrayOf(id.toString()),
@@ -363,7 +380,9 @@ class AppDatabase private constructor(ctx: Context) :
                     condition = ItemCondition.valueOf(it.getString(6)),
                     photos = jsonToPhotos(it.getString(7)),
                     status = ListingStatus.valueOf(it.getString(8)),
-                    createdAt = it.getLong(9)
+                    createdAt = it.getLong(9),
+                    place = it.getString(10),
+                    contact = it.getString(11)
                 )
             } else null
         }
@@ -379,6 +398,8 @@ class AppDatabase private constructor(ctx: Context) :
             put(Db.Listings.COL_CONDITION, l.condition.name)
             put(Db.Listings.COL_PHOTOS_JSON, JSONArray(l.photos).toString())
             put(Db.Listings.COL_STATUS,    l.status.name)
+            put(Db.Listings.COL_PLACE,     l.place)
+            put(Db.Listings.COL_CONTACT,   l.contact)
             // keep createdAt as-is
         }
         return writableDatabase.update(
@@ -404,7 +425,7 @@ class AppDatabase private constructor(ctx: Context) :
  */
 private object Db {
     const val DB_NAME = "mavmart.db"
-    const val DB_VERSION = 7   // bumped
+    const val DB_VERSION = 8
 
     object Users {
         const val TABLE = "users"
@@ -444,6 +465,8 @@ private object Db {
         const val COL_PHOTOS_JSON = "photos_json"
         const val COL_STATUS = "status"
         const val COL_CREATED_AT = "created_at"
+        const val COL_PLACE = "place"
+        const val COL_CONTACT = "contact"
 
         val CREATE = """
             CREATE TABLE $TABLE (
@@ -457,6 +480,8 @@ private object Db {
                 $COL_PHOTOS_JSON TEXT NOT NULL,
                 $COL_STATUS TEXT NOT NULL,
                 $COL_CREATED_AT INTEGER NOT NULL,
+                $COL_PLACE TEXT NOT NULL,
+                $COL_CONTACT TEXT NOT NULL,
                 FOREIGN KEY($COL_SELLER_ID) REFERENCES ${Users.TABLE}(${Users.COL_ID}) ON DELETE CASCADE
             )
         """.trimIndent()
