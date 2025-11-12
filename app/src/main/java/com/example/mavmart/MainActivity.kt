@@ -100,9 +100,9 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(route = "listing/{userId}/{listingId}", arguments = listOf(
-                                navArgument("userId") { type = NavType.LongType },
-                                navArgument("listingId") { type = NavType.LongType }
-                            )
+                            navArgument("userId") { type = NavType.LongType },
+                            navArgument("listingId") { type = NavType.LongType }
+                        )
                         ) { backStackEntry ->
                             val userId = backStackEntry.arguments?.getLong("userId") ?: 0L
                             val listingId = backStackEntry.arguments?.getLong("listingId") ?: 0L
