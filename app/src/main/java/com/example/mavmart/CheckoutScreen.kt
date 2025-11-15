@@ -115,21 +115,23 @@ fun CheckoutScreen(
                         focusManager.clearFocus()
 
                         // Build order from current cart snapshot
-                        val snapshot = CartRepository.snapshot(currentUserId) // List<Pair<Listing, Int>>
+                        val snapshot: List<Listing> = CartRepository.snapshot(currentUserId)
                         val orderId = System.currentTimeMillis()
-                        val lines = snapshot.map { (listing, qty) ->
+
+                        val lines = snapshot.map { listing ->
                             val seller = db.getUserById(listing.sellerId)
                             OrderLine(
                                 title = listing.title,
                                 priceCents = listing.priceCents,
-                                quantity = qty,
                                 sellerId = listing.sellerId,
                                 sellerName = seller?.let { "${it.first} ${it.last}" } ?: "Seller",
                                 place = listing.place,
                                 contact = listing.contact
                             )
                         }
-                        val total = snapshot.sumOf { (listing, qty) -> listing.priceCents * qty }
+
+                        val total = snapshot.sumOf { it.priceCents }
+
                         val order = OrderDetails(
                             orderId = orderId,
                             lines = lines,
@@ -139,12 +141,12 @@ fun CheckoutScreen(
                         OrderStore.save(currentUserId, order)
 
                         // Remove purchased listings from DB
-                        snapshot.forEach { (listing, _) -> db.deleteListing(listing.id) }
+                        snapshot.forEach { listing -> db.deleteListing(listing.id) }
 
                         // Clear cart
                         CartRepository.clear(currentUserId)
 
-                        // Navigate to confirmation with the orderId
+                        // Navigate to confirmation
                         onOrderPlaced(orderId)
                     }
                 },

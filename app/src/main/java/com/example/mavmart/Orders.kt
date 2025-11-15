@@ -3,7 +3,6 @@ package com.example.mavmart
 data class OrderLine(
     val title: String,
     val priceCents: Int,
-    val quantity: Int,
     val sellerId: Long,
     val sellerName: String,
     val place: String,

@@ -61,12 +61,15 @@ fun OrderConfirmationScreen(
 
             Text("Items", style = MaterialTheme.typography.titleSmall, color = cs.primary)
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f, fill = false)) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f, fill = false)
+            ) {
                 items(order.lines) { line ->
                     ListItem(
                         headlineContent = { Text(line.title) },
-                        supportingContent = { Text("Qty: ${line.quantity}") },
-                        trailingContent = { Text(formatCents(line.priceCents * line.quantity)) }
+                        // no quantity anymore
+                        trailingContent = { Text(formatCents(line.priceCents)) }
                     )
                     HorizontalDivider()
                 }
@@ -82,7 +85,7 @@ fun OrderConfirmationScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // If all items are from the same seller with same meetup info, show a single message
+            // If all items share the same seller/place/contact, show one message
             val uniquePickup = order.lines
                 .map { Triple(it.sellerName, it.place, it.contact) }
                 .toSet()

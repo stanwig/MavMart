@@ -30,8 +30,6 @@ fun AdminDashboardScreen(
 
     var users by remember { mutableStateOf(emptyList<User>()) }
     var listings by remember { mutableStateOf(emptyList<Listing>()) }
-
-    // detail state
     var selectedUser by remember { mutableStateOf<User?>(null) }
     var selectedListing by remember { mutableStateOf<Listing?>(null) }
 

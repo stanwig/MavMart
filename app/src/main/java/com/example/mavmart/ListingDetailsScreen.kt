@@ -130,7 +130,7 @@ fun ListingDetailsScreen(
                 } else {
                     Button(
                         onClick = {
-                            CartRepository.add(currentUserId, l, 1)
+                            CartRepository.add(currentUserId, l)
                             scope.launch { snackbarHostState.showSnackbar("Added to cart", withDismissAction = true) }
                         },
                         modifier = Modifier

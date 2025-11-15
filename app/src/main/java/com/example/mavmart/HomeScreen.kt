@@ -178,7 +178,7 @@ fun HomeScreen(
                         showAddToCart = true,
                         currentUserId = currentUserId,
                         onAddToCart = { listing ->
-                            CartRepository.add(currentUserId, listing, 1)
+                            CartRepository.add(currentUserId, listing)
                             scope.launch { snackbarHostState.showSnackbar("Added to cart", withDismissAction = true) }
                         },
                         onOpenListing = onOpenListing

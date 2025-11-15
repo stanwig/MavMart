@@ -1,6 +1,5 @@
 package com.example.mavmart
 
-
 /* ========= Roles ========= */
 
 enum class Role { User, Admin }

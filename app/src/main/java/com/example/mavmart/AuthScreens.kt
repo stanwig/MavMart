@@ -37,12 +37,10 @@ fun LoginScreen(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = cs.surface,            // page: white (light) / black (dark)
+        color = cs.surface,
         contentColor = cs.onSurface
     ) {
         Column(Modifier.fillMaxSize()) {
-
-            // Banner: orange (light) / navy (dark)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,7 +86,7 @@ fun LoginScreen(
                             .heightIn(min = 48.dp),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = cs.primary,   // navy (light) / orange (dark)
+                            containerColor = cs.primary,
                             contentColor = cs.onPrimary
                         )
                     ) { Text("Login as User", fontSize = 16.sp, fontWeight = FontWeight.Medium) }
@@ -192,7 +190,6 @@ private fun RoleLoginForm(
         },
         snackbarHost = { SnackbarHost(snack) },
         bottomBar = {
-            // Orange banner with navy Login button – same pattern as Register
             Surface(color = cs.background) {
                 Box(
                     Modifier
@@ -235,7 +232,7 @@ private fun RoleLoginForm(
             modifier = Modifier
                 .padding(inner)
                 .fillMaxSize()
-                .background(cs.surface)  // page: white / black
+                .background(cs.surface)
         ) {
             // Banner: orange / navy
             Surface(
@@ -391,6 +388,11 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    val snack = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val emailNormalized = remember(email) { email.trim().lowercase() }
+    val emailError = email.isNotBlank() && !emailNormalized.endsWith("@mavs.uta.edu")
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -407,23 +409,34 @@ fun RegisterScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = cs.primary)
             )
         },
+        snackbarHost = { SnackbarHost(snack) },
+
         bottomBar = {
-            // Sticky bar: orange (light) / navy (dark), white text for readability
             Button(
                 onClick = {
+                    if (!emailNormalized.endsWith("@mavs.uta.edu")) {
+                        scope.launch {
+                            snack.showSnackbar("Use your @mavs.uta.edu email.", withDismissAction = true)
+                        }
+                        return@Button
+                    }
+
                     val user = User(
                         id = 0L,
                         first = first.trim(),
                         last = last.trim(),
-                        email = email.trim().lowercase(),
+                        email = emailNormalized,
                         password = password,
                         role = Role.User
                     )
                     db.insertUser(user)
                     onBack()
                 },
-                enabled = first.isNotBlank() && last.isNotBlank() &&
-                        email.isNotBlank() && password.isNotEmpty(),
+                enabled = first.isNotBlank() &&
+                        last.isNotBlank() &&
+                        email.isNotBlank() &&
+                        password.isNotEmpty() &&
+                        !emailError,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -442,26 +455,6 @@ fun RegisterScreen(
                 .fillMaxSize()
                 .background(cs.surface)
         ) {
-            // Banner block (orange / navy)
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(170.dp),
-                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
-                color = cs.background,
-                contentColor = MaterialTheme.colorScheme.onBackground
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    LogoImage(Modifier.size(52.dp))
-                    Spacer(Modifier.width(14.dp))
-                    Column { Text("MavMart", fontSize = 26.sp, fontWeight = FontWeight.SemiBold) }
-                }
-            }
 
             Spacer(Modifier.height(20.dp))
 
@@ -515,10 +508,18 @@ fun RegisterScreen(
                     )
 
                     OutlinedTextField(
-                        value = email, onValueChange = { email = it },
-                        label = { Text("Email") }, singleLine = true,
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        isError = emailError,
+                        supportingText = {
+                            if (emailError) {
+                                Text("Use your @mavs.uta.edu email", color = MaterialTheme.colorScheme.error)
+                            }
+                        },
                         shape = RoundedCornerShape(10.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = cs.primary,

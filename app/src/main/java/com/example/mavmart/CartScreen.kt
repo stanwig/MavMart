@@ -13,14 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -77,39 +73,20 @@ fun CartScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(Modifier.weight(1f)) {
-                            Text(cartItem.listing.title, style = MaterialTheme.typography.titleMedium, color = cs.primary)
+                            Text(
+                                cartItem.listing.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = cs.primary
+                            )
                             Spacer(Modifier.height(4.dp))
                             Text(formatCents(cartItem.listing.priceCents), color = cs.onSurface)
                         }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            OutlinedButton(
-                                onClick = {
-                                    val newQty = (cartItem.quantity - 1).coerceAtLeast(0)
-                                    CartRepository.updateQuantity(currentUserId, cartItem.id, newQty)
-                                },
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
-                            ) { Text("-") }
-
-                            Text("${cartItem.quantity}", color = cs.onSurface, style = MaterialTheme.typography.titleSmall)
-
-                            Button(
-                                onClick = {
-                                    CartRepository.updateQuantity(currentUserId, cartItem.id, cartItem.quantity + 1)
-                                },
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)
-                            ) { Text("+") }
-
-                            IconButton(
-                                onClick = { CartRepository.remove(currentUserId, cartItem.id) }
-                            ) {
-                                Icon(Icons.Outlined.ShoppingCart, contentDescription = "Remove")
-                            }
+                        OutlinedButton(
+                            onClick = { CartRepository.remove(currentUserId, cartItem.id) },
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
+                        ) { Text("REMOVE")
                         }
                     }
                 }
@@ -138,7 +115,7 @@ fun CartScreen(
                         onClick = { CartRepository.clear(currentUserId) },
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
-                    ) { Text("CLEAR") }
+                    ) { Text("CLEAR CART") }
 
                     Button(
                         onClick = onCheckout,
