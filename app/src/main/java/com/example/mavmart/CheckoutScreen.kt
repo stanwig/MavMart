@@ -60,7 +60,11 @@ fun CheckoutScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = cs.surface)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = cs.surface,
+                    navigationIconContentColor = cs.primary,
+                    titleContentColor = cs.primary
+                )
             )
         }
     ) { padding ->
