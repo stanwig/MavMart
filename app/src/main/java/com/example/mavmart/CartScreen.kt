@@ -62,7 +62,7 @@ fun CartScreen(
         ) {
             items(items = cartItems, key = { it.id }) { cartItem: CartItem ->
                 ElevatedCard(
-                    colors = CardDefaults.elevatedCardColors(containerColor = cs.surface),
+                    colors = CardDefaults.elevatedCardColors(containerColor = cs.background),
                     elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -85,7 +85,9 @@ fun CartScreen(
                         OutlinedButton(
                             onClick = { CartRepository.remove(currentUserId, cartItem.id) },
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = cs.primary,
+                                contentColor = cs.onPrimary)
                         ) { Text("REMOVE")
                         }
                     }
@@ -96,7 +98,7 @@ fun CartScreen(
         Surface(
             tonalElevation = 3.dp,
             shadowElevation = 3.dp,
-            color = cs.surface
+            color = cs.background
         ) {
             Column(Modifier.fillMaxWidth().padding(16.dp)) {
                 Row(
@@ -114,13 +116,19 @@ fun CartScreen(
                     OutlinedButton(
                         onClick = { CartRepository.clear(currentUserId) },
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = cs.primary,
+                            contentColor = cs.onPrimary
+                        )
                     ) { Text("CLEAR CART") }
 
                     Button(
                         onClick = onCheckout,
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = cs.primary, contentColor = cs.onPrimary)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = cs.primary,
+                            contentColor = cs.onPrimary
+                        )
                     ) { Text("CHECK OUT") }
                 }
             }
