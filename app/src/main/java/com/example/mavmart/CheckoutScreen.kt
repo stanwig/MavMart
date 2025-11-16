@@ -78,7 +78,26 @@ fun CheckoutScreen(
                 isError = cardError != null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 supportingText = { cardError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = cs.surface,
+                    unfocusedContainerColor = cs.surface,
+                    disabledContainerColor = cs.surface,
+
+                    focusedTextColor = cs.onSurface,
+                    unfocusedTextColor = cs.onSurface,
+                    disabledTextColor = cs.onSurface.copy(alpha = 0.6f),
+
+                    cursorColor = cs.onSurface,
+                    focusedBorderColor = cs.primary,
+                    unfocusedBorderColor = cs.primary.copy(alpha = 0.7f),
+
+                    focusedLabelColor = cs.onSurface,
+                    unfocusedLabelColor = cs.onSurface.copy(alpha = 0.7f),
+
+                    focusedTrailingIconColor = cs.onSurface,
+                    unfocusedTrailingIconColor = cs.onSurface
+                )
             )
 
             OutlinedTextField(
@@ -88,7 +107,26 @@ fun CheckoutScreen(
                 isError = expiryError != null,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 supportingText = { expiryError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = cs.surface,
+                    unfocusedContainerColor = cs.surface,
+                    disabledContainerColor = cs.surface,
+
+                    focusedTextColor = cs.onSurface,
+                    unfocusedTextColor = cs.onSurface,
+                    disabledTextColor = cs.onSurface.copy(alpha = 0.6f),
+
+                    cursorColor = cs.onSurface,
+                    focusedBorderColor = cs.primary,
+                    unfocusedBorderColor = cs.primary.copy(alpha = 0.7f),
+
+                    focusedLabelColor = cs.onSurface,
+                    unfocusedLabelColor = cs.onSurface.copy(alpha = 0.7f),
+
+                    focusedTrailingIconColor = cs.onSurface,
+                    unfocusedTrailingIconColor = cs.onSurface
+                )
             )
 
             OutlinedTextField(
@@ -104,7 +142,26 @@ fun CheckoutScreen(
                     }
                 },
                 supportingText = { cvcError?.let { Text(it, color = MaterialTheme.colorScheme.error) } },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = cs.surface,
+                    unfocusedContainerColor = cs.surface,
+                    disabledContainerColor = cs.surface,
+
+                    focusedTextColor = cs.onSurface,
+                    unfocusedTextColor = cs.onSurface,
+                    disabledTextColor = cs.onSurface.copy(alpha = 0.6f),
+
+                    cursorColor = cs.onSurface,
+                    focusedBorderColor = cs.primary,
+                    unfocusedBorderColor = cs.primary.copy(alpha = 0.7f),
+
+                    focusedLabelColor = cs.onSurface,
+                    unfocusedLabelColor = cs.onSurface.copy(alpha = 0.7f),
+
+                    focusedTrailingIconColor = cs.onSurface,
+                    unfocusedTrailingIconColor = cs.onSurface
+                )
             )
 
             Spacer(Modifier.height(24.dp))

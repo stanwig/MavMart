@@ -62,7 +62,7 @@ fun CartScreen(
         ) {
             items(items = cartItems, key = { it.id }) { cartItem: CartItem ->
                 ElevatedCard(
-                    colors = CardDefaults.elevatedCardColors(containerColor = cs.surface),
+                    colors = CardDefaults.elevatedCardColors(containerColor = cs.background),
                     elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
                     shape = MaterialTheme.shapes.medium
                 ) {
@@ -85,7 +85,9 @@ fun CartScreen(
                         OutlinedButton(
                             onClick = { CartRepository.remove(currentUserId, cartItem.id) },
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = cs.primary)
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = cs.primary,
+                                contentColor = cs.onPrimary)
                         ) { Text("REMOVE")
                         }
                     }

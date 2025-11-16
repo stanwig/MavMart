@@ -305,11 +305,10 @@ private fun RoleLoginForm(
                         visualTransformation = if (showPass) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         trailingIcon = {
-                            IconButton(onClick = { showPass = !showPass }) {
-                                Icon(
-                                    imageVector = if (showPass) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                                    contentDescription = if (showPass) "Hide password" else "Show password",
-                                    tint = cs.primary
+                            TextButton(onClick = { showPass = !showPass }) {
+                                Text(
+                                    text = if (showPass) "Hide" else "Show",
+                                    color = cs.primary
                                 )
                             }
                         },
