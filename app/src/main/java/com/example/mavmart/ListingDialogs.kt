@@ -277,7 +277,7 @@ fun EditListingDialog(
                 OutlinedTextField(
                     value = contact, onValueChange = { contact = it },
                     label = { Text("Preferred contact (email or phone)") },
-                    textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                    textStyle = LocalTextStyle.current.copy(color = cs.onSurface),
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     modifier = Modifier.fillMaxWidth(),
