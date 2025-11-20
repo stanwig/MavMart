@@ -448,7 +448,9 @@ fun RegisterScreen(
                 onClick = {
                     if (!emailNormalized.endsWith("@mavs.uta.edu")) {
                         scope.launch {
-                            snack.showSnackbar("Use your @mavs.uta.edu email.", withDismissAction = true)
+                            snack.showSnackbar(
+                                "Use your @mavs.uta.edu email.",
+                                withDismissAction = true)
                         }
                         return@Button
                     }
@@ -461,8 +463,19 @@ fun RegisterScreen(
                         password = password,
                         role = Role.User
                     )
-                    db.insertUser(user)
-                    onBack()
+                    val result = db.insertUser(user)
+
+                    if (result == -1L) {
+                        // UNIQUE email violation, email already registered
+                        scope.launch {
+                            snack.showSnackbar(
+                                "Registration failed! Email already registered.",
+                                withDismissAction = true
+                            )
+                        }
+                    } else {
+                        onBack()
+                    }
                 },
                 enabled = first.isNotBlank() &&
                         last.isNotBlank() &&
